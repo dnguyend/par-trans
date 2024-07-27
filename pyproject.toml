@@ -1,0 +1,56 @@
+[project]
+name = "par-trans"
+authors = [
+  { name="Du Nguyen", email="dnguyend@gmail.com" },
+  { name="Stefan Sommer", email="sommer@di.ku.dk" },
+]
+description = "Parallel transport on matrix manifolds"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "jax",
+    "jaxlib",
+    "numpy",
+    "scipy",     
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+examples = [
+    "par-trans",
+    "matplotlib",    
+]
+
+tests = [
+     "matplotlib",     
+]      
+
+dev = [
+    "flake8",
+    "jupyter",
+    "matplotlib",
+    "mypy",
+    "pytest",
+]
+
+[project.urls]
+Homepage = "https://github.com/dnguyend/par-trans"
+Issues = "https://github.com/dnguyend/par-trans/issues"
+
+[build-system]
+requires = [
+    "setuptools>=60",
+    "setuptools-scm>=8.0",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["par_trans", "jax_par_trans"]
+
+[tool.setuptools_scm]
+version_file = "par_trans/_version.py"
