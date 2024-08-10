@@ -139,8 +139,8 @@ def test_time():
     jax.config.update("jax_enable_x64", True)
     key = random.PRNGKey(0)
 
-    d_list = jnp.array([5, 10, 20,  200,  500])
-    n_list = jnp.array([100, 200, 500,  1000, 20000])
+    # d_list = jnp.array([5, 10, 20,  200,  500])
+    # n_list = jnp.array([100, 200, 500,  1000, 20000])
 
     alp_list = jnp.array([.4, .5, .7, 1., 1.2])
     t_interval = jnp.array([.5, 1., 2., 5., 20.])
@@ -292,7 +292,7 @@ def display_test():
     
             
                 
-def test_isometry():
+def test_isometry_old():
     jax.config.update("jax_enable_x64", True)
     import jax.numpy.linalg as jla
     from jax_par_trans.expv.utils import (grand)

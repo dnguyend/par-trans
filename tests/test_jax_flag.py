@@ -272,8 +272,8 @@ def display_test():
 def test_isometry():
     jax.config.update("jax_enable_x64", True)
 
-    # dvec = jnp.array([200, 40, 60, 1700])
-    dvec = jnp.array([3, 2, 5])
+    dvec = jnp.array([30, 20, 50, 900])
+    # dvec = jnp.array([3, 2, 5])
     alp = .5
 
     key = random.PRNGKey(0)

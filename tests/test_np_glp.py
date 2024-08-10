@@ -24,10 +24,11 @@ def test():
 
     dlt = 1e-6
     
+    print("Check Christoffel gamma produces a metric compatible connection")    
     print((glp.inner(x+dlt*v, va, va) - glp.inner(x, va, va))/dlt)
     print(2*glp.inner(x, va, glp.christoffel_gamma(x, v, va)))
     
-    
+    print("Check time derivatives of geodesics")    
     print(cz((glp.exp(x, (t+dlt)*v) - glp.exp(x, t*v))/dlt
              - glp.dexp(x, v, t, ddexp=False)[1]))
 
@@ -35,6 +36,7 @@ def test():
              - glp.dexp(x, v, t, ddexp=True)[2]))
 
     gmms = glp.dexp(x, v, t, ddexp=True)
+    print("CHECK Geodesic Equation with analytic differentiation")    
     print(cz(gmms[2] + glp.christoffel_gamma(gmms[0], gmms[1], gmms[1])))
 
     def Par(b, a):
@@ -43,6 +45,7 @@ def test():
     def Par_T(b, a):
         return 0.5*(lie(b, a.T) + (1+glp.beta)*(lie(-asym(a), b) - asym(lie(b, a.T))))
 
+    print("Check Par and Par_T, the transport operator and adjoint")
     print(np.sum(Par(va, v)*vb))
     print(np.sum(Par_T(vb, v)*va))
 
@@ -59,12 +62,17 @@ def test():
         bnew = sc(b, 1/np.sqrt(glp.beta))
         return sc(0.5*(lie(bnew, a) + (1+glp.beta)*(lie(asym(a), bnew) - lie(asym(bnew), a))),
                   np.sqrt(glp.beta))
-    
+
+    print("check scaling produces an antisymmetric operator")
     print(np.sum(sc(Par(sc(vb, 1/np.sqrt(glp.beta)), v), np.sqrt(glp.beta))*va))
     print(np.sum(sc(Par(sc(va, 1/np.sqrt(glp.beta)), v), np.sqrt(glp.beta))*vb))
 
     Delta = glp.parallel(x, v, va, t)
 
+    print("CHECK TRANSPORT EQUATION with numerical differentiation")    
     print((glp.parallel(x, v, va, t+dlt) - Delta)/dlt \
           + glp.christoffel_gamma(gmms[0], gmms[1], Delta))
 
+
+if __name__ == "__main__":
+    test()
