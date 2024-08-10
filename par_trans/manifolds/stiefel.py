@@ -1,5 +1,7 @@
-""":math:`St^+`: Positive Component of the Generalized Linear group with a Cheeger deformation metric.
+"""Stiefel manifold :math:`\\mathrm{St}((n, d), \\alpha)` with metric defined by a parameters :math:`\\alpha`.
 """
+
+
 import numpy as np
 import numpy.linalg as la
 from numpy.random import randn
@@ -11,7 +13,10 @@ from par_trans.utils.utils import (sym, asym, vcat)
 
 def par_bal(b, ar, salp):
     """ balanced parallel operator
-    sc(par(a, sc(b, 1/salp), salp)
+    :math:`s_{salp}(P(ar, s_{\\frac{1}{salp}}(b)))`, where s is the operator scaling the top
+    :math:`d\\times d` block in a :math:`n\\times d` matrix by the subscript argument.
+    salp is typically :math:`\\alpha^{\\frac{1}{2}}`.
+    This operator is antisymmetric when restricted to the tangent space at :math:`I_{n,d}`.
     """
     d = ar.shape[1]
     b_a = b[:d, :]
@@ -25,6 +30,10 @@ def par_bal(b, ar, salp):
 
 
 def solve_w(b, ar, alp, t, tol=None):
+    """The exponential action :math:`expv(tP_{ar}, b)` when the metric is
+    given by the parameter :math:`\\alpha`.
+    The calculation uses the  1-norm estimate in the local function one_norm_est.
+    """
     _theta = {
         # The first 30 values are from table A.3 of Computing Matrix Functions.
         1: 2.29e-16,
@@ -117,11 +126,10 @@ def solve_w(b, ar, alp, t, tol=None):
 
 
 class Stiefel():
-    """:math:`GL^+` with left invariant metric defined by a parameter.
+    """:math:`\\mathrm{St}_{n,d}` with an invariant metric defined by a parameter.
 
     :param p: the size of the matrix
-    :param beta: the metric is `\\frac{1}{2}tr \\mathtt{g}^2 -\frac{2\alpha-1}{2}\\mathtt{g}_{\\mathfrak{a}}^2.
-
+    :param alpha: the metric is :math:`tr \\eta^{T}\\eta+(\\alpha-1)tr\\eta^TYY^T\\eta`.
     """
     def __init__(self, n, d, alpha, null_cut_off=1e-12):
         self.shape = (n, d)
@@ -156,12 +164,12 @@ class Stiefel():
         return la.qr(self.rand_ambient())[0]
 
     def rand_vec(self, x):
-        """ A random point on the manifold
+        """ A random tangent vector to the manifold at x
         """
         return self.proj(x, self.rand_ambient())
 
     def retract(self, x, v):
-        """ second order retraction, but simple
+        """ second order retraction.
         """
         return x + v - 0.5* self.proj(x, self.christoffel_gamma(x, v, v))
 
@@ -172,8 +180,8 @@ class Stiefel():
 
     def make_ar(self, a, r):
         """  lift ar a tangent vector to the manifold at :math:`I_{n,d}`
-        to a square metric a horizontal vector at :math:`SO(n)`
-        """                
+        to a square matrix, the lifted horizontal vector at :math:`I_n\\in SO(n)`.
+        """
         k = r.shape[0]
         return np.concatenate([
             np.concatenate([a, - r.T], axis=1),
@@ -193,7 +201,14 @@ class Stiefel():
         return (np.concatenate([x, q], axis=1)@expm(aar)[:, :d])@expm((1-2*self.alpha)*a)
     
     def dexp(self, x, v, t, ddexp=False):
-        """ Higher derivative of Exponential function
+        """ Higher derivative of Exponential function.
+
+        :param x: the initial point :math:`\\gamma(0)`
+        :param v: the initial velocity :math:`\\dot{\\gamma}(0)`
+        :param t: time.
+
+        If ddexp is False, we return :math:`\\gamma(t), \\dot{\\gamma}(t)`.
+        Otherwise, we return :math:`\\gamma(t), \\dot{\\gamma}(t), \\ddot{\\gamma}(t)`.
         """
         n, d = x.shape
         alp = self.alpha
@@ -232,7 +247,13 @@ class Stiefel():
             xi@xTeta + eta@xTxi - x@sym2(xTxi@xTeta))
 
     def parallel_expm_multiply(self, x, xi, eta, t):
-        """parallel transport using expm_multiply from scipy
+        """parallel transport.  The exponential action is computed using expm_multiply from scipy.
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+
         """
         n, d = x.shape
         alp = self.alpha
@@ -272,7 +293,14 @@ class Stiefel():
             + (eta - x@x.T@eta - q@q.T@eta)@expm(t*(1-alp)*a)
 
     def parallel(self, x, xi, eta, t):
-        """parallel transport using expv, with customized estimate of 1_norm
+        """parallel transport. The exponential action is computed
+        using expv, with our customized estimate of 1_norm of the operator P
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+
         """        
         n, d = x.shape
         alp = self.alpha

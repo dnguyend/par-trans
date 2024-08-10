@@ -71,7 +71,7 @@ class LinearOperator():
         raise NotImplementedError
 
     def one_norm_est(self):
-        """Estimate of the 1-norm
+        """Estimate the 1-norm
         """
         raise NotImplementedError
 

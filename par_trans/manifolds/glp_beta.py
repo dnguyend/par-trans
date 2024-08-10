@@ -13,7 +13,7 @@ class GLpBeta():
     """:math:`GL^+` with left invariant metric defined by a parameter.
 
     :param p: the size of the matrix
-    :param beta: the metric is `tr \\mathtt{g}^2 -\frac{2\alpha-1}{2}\\mathtt{g}_{\\mathfrak{a}}^2.
+    :param beta: :math:`(\\beta_0, \\beta_1)`: the metric at the identity is :math:`\\beta_0tr \\mathtt{g}^2 -\\beta_1 tr\\mathtt{g}_{\\mathfrak{a}}^2`.
 
     """
     def __init__(self, n, beta):
@@ -34,6 +34,8 @@ class GLpBeta():
         return np.sum(ix_xi*ix_eta.T) + (1+bt)*np.sum(asym(ix_xi)*asym(ix_eta))
 
     def proj(self, _, omg):
+        """Projection to :math:`T_xG`. The identity map in this case
+        """
         return omg
 
     def rand_ambient(self):
@@ -56,11 +58,14 @@ class GLpBeta():
         return self.rand_ambient()
 
     def retract(self, x, v):
-        """ second order retraction, but simple
+        """ second order retraction
         """
         return x + v - 0.5* self.proj(x, self.christoffel_gamma(x, v, v))
 
     def approx_nearest(self, q):
+        """ point on the manifold that is approximately nearest to q.
+        Just q
+        """        
         return q
 
     def exp(self, x, v):
@@ -71,8 +76,14 @@ class GLpBeta():
         return x@expm(a-(1+bt)*asym(a))@expm((1+bt)*asym(a))
 
     def dexp(self, x, v, t, ddexp=False):
-        """ Higher time derivative of geodesics
-        return 
+        """ Higher derivative of Exponential function.
+
+        :param x: the initial point :math:`\\gamma(0)`
+        :param v: the initial velocity :math:`\\dot{\\gamma}(0)`
+        :param t: time.
+
+        If ddexp is False, we return :math:`\\gamma(t), \\dot{\\gamma}(t)`.
+        Otherwise, we return :math:`\\gamma(t), \\dot{\\gamma}(t), \\ddot{\\gamma}(t)`.
         """
 
         bt = self.beta
@@ -96,6 +107,13 @@ class GLpBeta():
             + (bt+1)/2*x@(lie(asym(ix_xi), ix_eta) + lie(asym(ix_eta), ix_xi))
 
     def parallel(self, x, xi, eta, t):
+        """parallel transport.  The exponential action is computed using expm_multiply from scipy.
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+        """
         n = self.shape[0]
         bt = self.beta
         a = la.solve(x, xi)
@@ -110,7 +128,7 @@ class GLpBeta():
 
         def par_T(b):
             return 0.5*(lie(b, a.T) + (1+self.beta)*(lie(-asym(a), b) - asym(lie(b, a.T))))
-                
+
         p_opt = LinearOperator((n**2, n**2),
                                matvec=lambda w: t*par(w.reshape(n, n)).reshape(-1),
                                rmatvec=lambda w: t*par_T(w.reshape(n, n)).reshape(-1))

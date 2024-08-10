@@ -51,9 +51,9 @@ class Flag():
     """:math:`Flag(\\vec{d})` with a homogeneous metric defined by a parameter.
     Realized as a quotient of a Stiefel manifold
 
-    :param alpha: the metric is `\\frac{1}{2}tr \\mathtt{g}^2 -\frac{2\alpha-1}{2}\\mathtt{g}_{\\mathfrak{a}}^2.
+    :param alpha: the metric is :math:`tr \\eta^{T}\\eta+(\\alpha-1)tr\\eta^TYY^T\\eta`.
     
-    For ease of implementation, d_{p+1} is renamed d[0] and saved at top of dvec.
+    For ease of implementation, :math:`d_{p+1}` is renamed d[0] and saved at top of dvec.
     """
     def __init__(self, dvec, alpha=.5):
         self.n = jnp.sum(dvec)
@@ -118,13 +118,13 @@ class Flag():
         return jla.qr(tmp)[0], key
 
     def rand_vec(self, key, x):
-        """ A random point on the manifold
+        """  A random vector at x
         """
         tmp, key = self.rand_ambient(key)
         return self.proj(x, tmp), key
 
     def retract(self, x, v):
-        """ second order retraction, but simple
+        """ second order retraction
         """
         return x + v - 0.5* self.proj(x, self.christoffel_gamma(x, v, v))
 
@@ -135,7 +135,7 @@ class Flag():
 
     def make_ar(self, a, r):
         """  lift ar a tangent vector to the manifold at :math:`I_{n,d}`
-        to a square metric a horizontal vector at :math:`SO(n)`
+        to a square matrix a horizontal vector at :math:`SO(n)`
         """
         k = r.shape[0]
         return jnp.concatenate([
@@ -156,7 +156,14 @@ class Flag():
         return (jnp.concatenate([x, q], axis=1)@expm(aar)[:, :d])@expm((1-2*self.alpha)*a)
 
     def dexp(self, x, v, t, ddexp=False):
-        """ Higher derivative of Exponential function
+        """ Higher derivative of Exponential function.
+
+        :param x: the initial point :math:`\\gamma(0)`
+        :param v: the initial velocity :math:`\\dot{\\gamma}(0)`
+        :param t: time.
+
+        If ddexp is False, we return :math:`\\gamma(t), \\dot{\\gamma}(t)`.
+        Otherwise, we return :math:`\\gamma(t), \\dot{\\gamma}(t), \\ddot{\\gamma}(t)`.
         """
         n, d = x.shape
         alp = self.alpha
@@ -202,6 +209,15 @@ class Flag():
 
     def parallel_canonical(self, x, xi, eta, t):
         """only works for alpha = .5
+        parallel transport. Only works for alpha = .5
+        The exponential action is computed
+        using expv, with our customized estimate of 1_norm of the operator P
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+
         """
         n, d = x.shape
         # alp = 0.5

@@ -1,4 +1,4 @@
-"""Common uti functions
+"""Common util functions
 """
 import numpy as np
 

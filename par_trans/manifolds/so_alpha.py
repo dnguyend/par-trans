@@ -12,8 +12,7 @@ class SOAlpha():
     """:math:`SO` with left invariant metric defined by a parameter.
 
     :param n: the size of the matrix
-    :param alpha: the metric is `\\frac{1}{2}tr \\mathtt{g}^2 -\frac{2\alpha-1}{2}\\mathtt{g}_{\\mathfrak{a}}^2.
-
+    :param alpha: the metric at the identity is :math:`-\\frac{1}{2}tr \\mathtt{g}^2-\\frac{2\\alpha-1}{2}tr\\mathtt{g}_{\\mathfrak{a}}^2`
     """
     def __init__(self, n, k, alpha):
         self.shape = (n, n)
@@ -34,6 +33,8 @@ class SOAlpha():
         return 0.5*np.sum(xi*eta) + (alp-.5)*np.sum(ix_xi[:k, :k]*ix_eta[:k, :k])
 
     def proj(self, x, omg):
+        """Projection to :math:`T_xG`.
+        """        
         return x@asym(x.T@omg)
 
     def _lie_proj_a(self, omg):
@@ -51,15 +52,14 @@ class SOAlpha():
         """ A random point on the manifold
         """
         return la.qr(self.rand_ambient())[0]
-        
 
     def rand_vec(self, x):
-        """ A random point on the manifold
+        """ A random tangent vector at x
         """
         return self.proj(x, self.rand_ambient())
 
     def retract(self, x, v):
-        """ second order retraction, but simple
+        """ second order retraction
         """
         return x + v - 0.5* self.proj(x, self.christoffel_gamma(x, v, v))
 
@@ -79,8 +79,16 @@ class SOAlpha():
         return xe_a_alp
 
     def dexp(self, x, v, t, ddexp=False):
-        """ Higher derivative of Exponential function
+        """ Higher derivative of Exponential function.
+
+        :param x: the initial point :math:`\\gamma(0)`
+        :param v: the initial velocity :math:`\\dot{\\gamma}(0)`
+        :param t: time.
+
+        If ddexp is False, we return :math:`\\gamma(t), \\dot{\\gamma}(t)`.
+        Otherwise, we return :math:`\\gamma(t), \\dot{\\gamma}(t), \\ddot{\\gamma}(t)`.
         """
+
         alp, k = self.alpha, self.k
         a = x.T@v
         a_k = a[:k, :k]
@@ -108,6 +116,8 @@ class SOAlpha():
         return xe_a_alp, dxe_a_alp, ddxe_a_alp
 
     def christoffel_gamma_lie(self, x, xi, eta):
+        """ function evaluating the christoffel symbols in Lie bracket form
+        """
         alp, k = self.alpha, self.k
         ix_xi = x.T@xi
         ix_eta = x.T@eta
@@ -120,6 +130,8 @@ class SOAlpha():
             + (1-2*alp)/2*x@(lie(ix_xi0, ix_eta) + lie(ix_eta0, ix_xi))
 
     def christoffel_gamma(self, x, xi, eta):
+        """ function evaluating the christoffel symbols, simplified
+        """
         alp, k = self.alpha, self.k
         ix_xi = x.T@xi
         ix_eta = x.T@eta
@@ -131,6 +143,14 @@ class SOAlpha():
         return 0.5*x@(xi.T@eta + eta.T@xi) + (1-2*alp)/2*x@lie2
 
     def parallel(self, x, xi, eta, t):
+        """parallel transport.  The exponential action is computed using expm_multiply from scipy.
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+        """
+        
         alp, n, k = self.alpha, self.shape[0], self.k
         a = x.T@xi
         a_k = a[:k, :k]

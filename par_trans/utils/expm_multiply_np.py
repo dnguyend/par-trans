@@ -1,4 +1,9 @@
-"""Compute the action of the matrix exponential."""
+"""Compute the action of the matrix exponential. This module is taken
+from scipy, the one difference is we add the option use_frag_31 to see if the
+more difficult algorithm requiring the estimation of a higher norm makes much
+of a difference. This more difficult estimate is one of the reasons the algorithm
+is still not adapted for JAX. We use this module to show it is sufficient to use only the 1-norm in our case.
+"""
 from warnings import warn
 
 import numpy as np
@@ -82,7 +87,7 @@ def _ident_like(A):
 def expm_multiply(A, B, start=None, stop=None, num=None,
                   endpoint=None, traceA=None, use_frag_31=True):
     """
-    Compute the action of the matrix exponential of A on B.
+    Compute the action of the matrix exponential of A on B, using the algorithm described in [1]_ and [2]_ .
 
     Parameters
     ----------
@@ -107,8 +112,8 @@ def expm_multiply(A, B, start=None, stop=None, num=None,
         `A`, thus an approximate trace is acceptable.
         For linear operators, `traceA` should be provided to ensure performance
         as the estimation is not guaranteed to be reliable for all cases.
-
-        .. versionadded:: 1.9.0
+    use_frag_31 : bool, optional
+         Indicates if we use high_p or not.
 
     Returns
     -------
@@ -176,6 +181,7 @@ def expm_multiply(A, B, start=None, stop=None, num=None,
     >>> expm(2*A).dot(B)                # Verify 3rd timestep
     array([ 2.71828183,  1.        ])
     """
+    
     if all(arg is None for arg in (start, stop, num, endpoint)):
         X = _expm_multiply_simple(A, B, traceA=traceA, use_frag_31=use_frag_31)
     else:

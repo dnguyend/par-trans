@@ -1,4 +1,4 @@
-""":math:`Flag`: Flag manifold.
+""":math:`Flag`: Flag manifold. Quotient of :math:`\\mathrm{St}((n, d), \\alpha)` by a block diagonal group. For :math:`\\alpha=\\frac{1}{2}`, we have an efficient formula for parallel transport.
 """
 import numpy as np
 import numpy.linalg as la
@@ -9,6 +9,10 @@ from scipy.sparse.linalg import expm_multiply, LinearOperator
 
 
 def solve_w(b, ar, flg, t, tol=None):
+    """The exponential action :math:`expv(tP_{ar}, b)` when the metric is
+    given by the parameter :math:`\\alpha`.
+    The calculation uses the  1-norm estimate in the local function one_norm_est.
+    """    
     _theta = {
         # The first 30 values are from table A.3 of Computing Matrix Functions.
         1: 2.29e-16,
@@ -115,9 +119,9 @@ class Flag():
     """:math:`Flag(\\vec{d})` with a homogeneous metric defined by a parameter.
     Realized as a quotient of a Stiefel manifold
 
-    :param alpha: the metric is `\\frac{1}{2}tr \\mathtt{g}^2 -\frac{2\alpha-1}{2}\\mathtt{g}_{\\mathfrak{a}}^2.
+    :param alpha: the metric is :math:`tr \\eta^{T}\\eta+(\\alpha-1)tr\\eta^TYY^T\\eta`.
     
-    For ease of implementation, d_{p+1} is renamed d[0] and saved at top of dvec.
+    For ease of implementation, :math:`d_{p+1}` is renamed d[0] and saved at top of dvec.
     """
     def __init__(self, dvec, alpha=.5):
         self.n = np.sum(dvec)
@@ -179,12 +183,12 @@ class Flag():
         return la.qr(self.rand_ambient())[0]
 
     def rand_vec(self, x):
-        """ A random point on the manifold
+        """ A random vector at x
         """
         return self.proj(x, self.rand_ambient())
 
     def retract(self, x, v):
-        """ second order retraction, but simple
+        """ second order retraction
         """
         return x + v - 0.5* self.proj(x, self.christoffel_gamma(x, v, v))
 
@@ -195,8 +199,8 @@ class Flag():
 
     def make_ar(self, a, r):
         """  lift ar a tangent vector to the manifold at :math:`I_{n,d}`
-        to a square metric a horizontal vector at :math:`SO(n)`
-        """        
+        to a square matrix, a horizontal vector at :math:`SO(n)`o
+        """
         k = r.shape[0]
         return np.concatenate([
             np.concatenate([a, - r.T], axis=1),
@@ -216,8 +220,16 @@ class Flag():
         return (np.concatenate([x, q], axis=1)@expm(aar)[:, :d])@expm((1-2*self.alpha)*a)
 
     def dexp(self, x, v, t, ddexp=False):
-        """ Higher derivative of Exponential function
+        """ Higher derivative of Exponential function.
+
+        :param x: the initial point :math:`\\gamma(0)`
+        :param v: the initial velocity :math:`\\dot{\\gamma}(0)`
+        :param t: time.
+
+        If ddexp is False, we return :math:`\\gamma(t), \\dot{\\gamma}(t)`.
+        Otherwise, we return :math:`\\gamma(t), \\dot{\\gamma}(t), \\ddot{\\gamma}(t)`.
         """
+
         n, d = x.shape
         alp = self.alpha
         u, _, _ = la.svd(v - x@(x.T@v), full_matrices=False)
@@ -256,6 +268,14 @@ class Flag():
 
     def parallel_canonical_expm_multiply(self, x, xi, eta, t):
         """only works for alpha = .5
+        parallel transport. Only works for alpha = .5
+        The exponential action is computed
+        using expv, with our customized estimate of 1_norm of the operator P
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
         """
         n, d = x.shape
         u, _, _ = la.svd(xi - x@(x.T@xi), full_matrices=False)
