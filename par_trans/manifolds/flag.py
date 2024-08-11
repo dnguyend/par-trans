@@ -199,7 +199,7 @@ class Flag():
 
     def make_ar(self, a, r):
         """  lift ar a tangent vector to the manifold at :math:`I_{n,d}`
-        to a square matrix, a horizontal vector at :math:`SO(n)`o
+        to a square matrix, the lifted horizontal vector at :math:`I_n\\in SO(n)`.
         """
         k = r.shape[0]
         return np.concatenate([
