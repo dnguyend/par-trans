@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>par_trans.manifolds.glp_beta &mdash; par-trans  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            par-trans
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Numpy Parallel transport</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../par_trans.html">par_trans.manifolds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../par_trans.html#module-par_trans.utils">par_trans.expv</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">JAX Parallel transport</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../jax_par_trans.html">jax_par_trans.manifolds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../jax_par_trans.html#module-jax_par_trans.expv">jax_par_trans.expv</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://en.wikipedia.org/wiki/Parallel_transport">Wikipedia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dnguyend/par-trans">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">par-trans</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">par_trans.manifolds.glp_beta</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for par_trans.manifolds.glp_beta</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;:math:`GL^+`: Positive Component of the Generalized Linear group with a Cheeger deformation metric.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.linalg</span> <span class="k">as</span> <span class="nn">la</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">randn</span>
+
+<span class="kn">from</span> <span class="nn">par_trans.utils.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">asym</span><span class="p">,</span> <span class="n">lie</span><span class="p">,</span> <span class="n">cz</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">expm</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">expm_multiply</span><span class="p">,</span> <span class="n">LinearOperator</span>
+
+
+<div class="viewcode-block" id="GLpBeta">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta">[docs]</a>
+<span class="k">class</span> <span class="nc">GLpBeta</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;:math:`GL^+` with left invariant metric defined by a parameter.</span>
+
+<span class="sd">    :param p: the size of the matrix</span>
+<span class="sd">    :param beta: :math:`(\\beta_0, \\beta_1)`: the metric at the identity is :math:`\\beta_0tr \\mathtt{g}^2 -\\beta_1 tr\\mathtt{g}_{\\mathfrak{a}}^2`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+
+<div class="viewcode-block" id="GLpBeta.name">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.name">[docs]</a>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; name of the object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;GL+(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">)  beta=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.inner">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.inner">[docs]</a>
+    <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Inner product </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+        <span class="n">ix_xi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+        <span class="n">ix_eta</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ix_xi</span><span class="o">*</span><span class="n">ix_eta</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">asym</span><span class="p">(</span><span class="n">ix_xi</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">ix_eta</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.proj">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.proj">[docs]</a>
+    <span class="k">def</span> <span class="nf">proj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">omg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Projection to :math:`T_xG`. The identity map in this case</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">omg</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.rand_ambient">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.rand_ambient">[docs]</a>
+    <span class="k">def</span> <span class="nf">rand_ambient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;random ambient vector</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.rand_point">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.rand_point">[docs]</a>
+    <span class="k">def</span> <span class="nf">rand_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; A random point on the manifold</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rand_ambient</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">la</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">ret</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.rand_vec">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.rand_vec">[docs]</a>
+    <span class="k">def</span> <span class="nf">rand_vec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; A random tangent vector on the manifold</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rand_ambient</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.retract">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.retract">[docs]</a>
+    <span class="k">def</span> <span class="nf">retract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; second order retraction</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">v</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">proj</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">christoffel_gamma</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.approx_nearest">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.approx_nearest">[docs]</a>
+    <span class="k">def</span> <span class="nf">approx_nearest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; point on the manifold that is approximately nearest to q.</span>
+<span class="sd">        Just q</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="n">q</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.exp">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.exp">[docs]</a>
+    <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; geodesic, or riemannian exponential</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span><span class="nd">@expm</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">))</span><span class="nd">@expm</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.dexp">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.dexp">[docs]</a>
+    <span class="k">def</span> <span class="nf">dexp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">ddexp</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Higher derivative of Exponential function.</span>
+
+<span class="sd">        :param x: the initial point :math:`\\gamma(0)`</span>
+<span class="sd">        :param v: the initial velocity :math:`\\dot{\\gamma}(0)`</span>
+<span class="sd">        :param t: time.</span>
+
+<span class="sd">        If ddexp is False, we return :math:`\\gamma(t), \\dot{\\gamma}(t)`.</span>
+<span class="sd">        Otherwise, we return :math:`\\gamma(t), \\dot{\\gamma}(t), \\ddot{\\gamma}(t)`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">bt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="n">prt0</span> <span class="o">=</span> <span class="n">x</span><span class="nd">@expm</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+        <span class="n">prt1</span> <span class="o">=</span> <span class="n">expm</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">ddexp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">prt0</span><span class="nd">@prt1</span><span class="p">,</span> <span class="n">prt0</span><span class="nd">@a@prt1</span><span class="p">,</span> \
+                <span class="n">prt0</span><span class="o">@</span><span class="p">(</span><span class="n">a</span><span class="nd">@a</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">lie</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span><span class="nd">@prt1</span>
+        <span class="k">return</span> <span class="n">prt0</span><span class="nd">@prt1</span><span class="p">,</span> <span class="n">prt0</span><span class="nd">@a@prt1</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.christoffel_gamma">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.christoffel_gamma">[docs]</a>
+    <span class="k">def</span> <span class="nf">christoffel_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; the Christoffel symbol, as a function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+        <span class="n">ix_xi</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+        <span class="n">ix_eta</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">xi</span><span class="nd">@la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span> <span class="o">+</span> <span class="n">eta</span><span class="nd">@la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">))</span> \
+            <span class="o">+</span> <span class="p">(</span><span class="n">bt</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="o">@</span><span class="p">(</span><span class="n">lie</span><span class="p">(</span><span class="n">asym</span><span class="p">(</span><span class="n">ix_xi</span><span class="p">),</span> <span class="n">ix_eta</span><span class="p">)</span> <span class="o">+</span> <span class="n">lie</span><span class="p">(</span><span class="n">asym</span><span class="p">(</span><span class="n">ix_eta</span><span class="p">),</span> <span class="n">ix_xi</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="GLpBeta.parallel">
+<a class="viewcode-back" href="../../../par_trans.html#par_trans.manifolds.glp_beta.GLpBeta.parallel">[docs]</a>
+    <span class="k">def</span> <span class="nf">parallel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;parallel transport.  The exponential action is computed using expm_multiply from scipy.</span>
+
+<span class="sd">        :param x: a point on the manifold</span>
+<span class="sd">        :param xi: the initial velocity of the geodesic</span>
+<span class="sd">        :param eta: the vector to be transported</span>
+<span class="sd">        :param t: time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+
+        <span class="n">prt0</span> <span class="o">=</span> <span class="n">x</span><span class="nd">@expm</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="p">(</span><span class="n">a</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+        <span class="n">prt1</span> <span class="o">=</span> <span class="n">expm</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="p">((</span><span class="mi">1</span><span class="o">+</span><span class="n">bt</span><span class="p">)</span><span class="o">*</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">)))</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="n">la</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">par</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">lie</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">lie</span><span class="p">(</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">lie</span><span class="p">(</span><span class="n">asym</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">a</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">par_T</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">lie</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">lie</span><span class="p">(</span><span class="o">-</span><span class="n">asym</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">b</span><span class="p">)</span> <span class="o">-</span> <span class="n">asym</span><span class="p">(</span><span class="n">lie</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="p">))))</span>
+
+        <span class="n">p_opt</span> <span class="o">=</span> <span class="n">LinearOperator</span><span class="p">((</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span>
+                               <span class="n">matvec</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">t</span><span class="o">*</span><span class="n">par</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+                               <span class="n">rmatvec</span><span class="o">=</span><span class="k">lambda</span> <span class="n">w</span><span class="p">:</span> <span class="n">t</span><span class="o">*</span><span class="n">par_T</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">prt0</span><span class="nd">@expm_multiply</span><span class="p">(</span><span class="n">p_opt</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">traceA</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span><span class="nd">@prt1</span>                           </div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Du Nguyen and Stefan Sommer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

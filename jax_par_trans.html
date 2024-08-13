@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jax_par_trans.manifolds &mdash; par-trans  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="par_trans.manifolds" href="par_trans.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            par-trans
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Numpy Parallel transport</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="par_trans.html">par_trans.manifolds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="par_trans.html#module-par_trans.utils">par_trans.expv</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">JAX Parallel transport</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">jax_par_trans.manifolds</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#stiefel">Stiefel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel"><code class="docutils literal notranslate"><span class="pre">Stiefel</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.approx_nearest"><code class="docutils literal notranslate"><span class="pre">Stiefel.approx_nearest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.christoffel_gamma"><code class="docutils literal notranslate"><span class="pre">Stiefel.christoffel_gamma()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.dexp"><code class="docutils literal notranslate"><span class="pre">Stiefel.dexp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.exp"><code class="docutils literal notranslate"><span class="pre">Stiefel.exp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.inner"><code class="docutils literal notranslate"><span class="pre">Stiefel.inner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.make_ar"><code class="docutils literal notranslate"><span class="pre">Stiefel.make_ar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.name"><code class="docutils literal notranslate"><span class="pre">Stiefel.name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.parallel"><code class="docutils literal notranslate"><span class="pre">Stiefel.parallel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.rand_ambient"><code class="docutils literal notranslate"><span class="pre">Stiefel.rand_ambient()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.rand_point"><code class="docutils literal notranslate"><span class="pre">Stiefel.rand_point()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.rand_vec"><code class="docutils literal notranslate"><span class="pre">Stiefel.rand_vec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.Stiefel.retract"><code class="docutils literal notranslate"><span class="pre">Stiefel.retract()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.StiefelParallelOperator"><code class="docutils literal notranslate"><span class="pre">StiefelParallelOperator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.stiefel.StiefelParallelOperator.set_params"><code class="docutils literal notranslate"><span class="pre">StiefelParallelOperator.set_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#flag">Flag</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag"><code class="docutils literal notranslate"><span class="pre">Flag</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.approx_nearest"><code class="docutils literal notranslate"><span class="pre">Flag.approx_nearest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.christoffel_gamma"><code class="docutils literal notranslate"><span class="pre">Flag.christoffel_gamma()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.dexp"><code class="docutils literal notranslate"><span class="pre">Flag.dexp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.exp"><code class="docutils literal notranslate"><span class="pre">Flag.exp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.inner"><code class="docutils literal notranslate"><span class="pre">Flag.inner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.make_ar"><code class="docutils literal notranslate"><span class="pre">Flag.make_ar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.name"><code class="docutils literal notranslate"><span class="pre">Flag.name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.parallel_canonical"><code class="docutils literal notranslate"><span class="pre">Flag.parallel_canonical()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.proj"><code class="docutils literal notranslate"><span class="pre">Flag.proj()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.proj_m"><code class="docutils literal notranslate"><span class="pre">Flag.proj_m()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.rand_ambient"><code class="docutils literal notranslate"><span class="pre">Flag.rand_ambient()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.rand_point"><code class="docutils literal notranslate"><span class="pre">Flag.rand_point()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.rand_vec"><code class="docutils literal notranslate"><span class="pre">Flag.rand_vec()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.retract"><code class="docutils literal notranslate"><span class="pre">Flag.retract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.Flag.symf"><code class="docutils literal notranslate"><span class="pre">Flag.symf()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.manifolds.flag.FlagCanonicalParallelOperator"><code class="docutils literal notranslate"><span class="pre">FlagCanonicalParallelOperator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.manifolds.flag.FlagCanonicalParallelOperator.set_params"><code class="docutils literal notranslate"><span class="pre">FlagCanonicalParallelOperator.set_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-jax_par_trans.expv">jax_par_trans.expv</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#expv">Expv</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.expv.LinearOperator"><code class="docutils literal notranslate"><span class="pre">LinearOperator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.expv.expv.LinearOperator.dot"><code class="docutils literal notranslate"><span class="pre">LinearOperator.dot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.expv.expv.LinearOperator.expv"><code class="docutils literal notranslate"><span class="pre">LinearOperator.expv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.expv.expv.LinearOperator.one_norm_est"><code class="docutils literal notranslate"><span class="pre">LinearOperator.one_norm_est()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jax_par_trans.expv.expv.LinearOperator.set_params"><code class="docutils literal notranslate"><span class="pre">LinearOperator.set_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utils">Utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.asym"><code class="docutils literal notranslate"><span class="pre">asym()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.cz"><code class="docutils literal notranslate"><span class="pre">cz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.grand"><code class="docutils literal notranslate"><span class="pre">grand()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.hcat"><code class="docutils literal notranslate"><span class="pre">hcat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.lie"><code class="docutils literal notranslate"><span class="pre">lie()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.sym"><code class="docutils literal notranslate"><span class="pre">sym()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jax_par_trans.expv.utils.vcat"><code class="docutils literal notranslate"><span class="pre">vcat()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://en.wikipedia.org/wiki/Parallel_transport">Wikipedia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dnguyend/par-trans">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">par-trans</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">jax_par_trans.manifolds</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/jax_par_trans.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p>The JAX version. This version offers the AD feature of JAX, and execute on GPU.</p>
+<section id="module-jax_par_trans.manifolds">
+<span id="jax-par-trans-manifolds"></span><h1>jax_par_trans.manifolds<a class="headerlink" href="#module-jax_par_trans.manifolds" title="Link to this heading"></a></h1>
+<section id="stiefel">
+<h2>Stiefel<a class="headerlink" href="#stiefel" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+<p id="module-jax_par_trans.manifolds.stiefel"><span class="math notranslate nohighlight">\(St\)</span>: Stiefel manifold.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jax_par_trans.manifolds.stiefel.</span></span><span class="sig-name descname"><span class="pre">Stiefel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel" title="Link to this definition"></a></dt>
+<dd><p><span class="math notranslate nohighlight">\(\mathrm{St}_{n,d}\)</span> with an invariant metric defined by a parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> – the size of the matrix</p></li>
+<li><p><strong>alpha</strong> – the metric is <span class="math notranslate nohighlight">\(tr \eta^{T}\eta+(\alpha-1)tr\eta^TYY^T\eta\)</span>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.approx_nearest">
+<span class="sig-name descname"><span class="pre">approx_nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.approx_nearest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.approx_nearest" title="Link to this definition"></a></dt>
+<dd><p>point on the manifold that is approximately nearest to q</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.christoffel_gamma">
+<span class="sig-name descname"><span class="pre">christoffel_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.christoffel_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.christoffel_gamma" title="Link to this definition"></a></dt>
+<dd><p>Christoffel function of the manifold</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.dexp">
+<span class="sig-name descname"><span class="pre">dexp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddexp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.dexp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.dexp" title="Link to this definition"></a></dt>
+<dd><p>Higher derivative of Exponential function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the initial point <span class="math notranslate nohighlight">\(\gamma(0)\)</span></p></li>
+<li><p><strong>v</strong> – the initial velocity <span class="math notranslate nohighlight">\(\dot{\gamma}(0)\)</span></p></li>
+<li><p><strong>t</strong> – time.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If ddexp is False, we return <span class="math notranslate nohighlight">\(\gamma(t), \dot{\gamma}(t)\)</span>.
+Otherwise, we return <span class="math notranslate nohighlight">\(\gamma(t), \dot{\gamma}(t), \ddot{\gamma}(t)\)</span>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.exp">
+<span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.exp" title="Link to this definition"></a></dt>
+<dd><p>geodesic, or riemannian exponential</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.inner">
+<span class="sig-name descname"><span class="pre">inner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.inner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.inner" title="Link to this definition"></a></dt>
+<dd><p>Inner product</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.make_ar">
+<span class="sig-name descname"><span class="pre">make_ar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.make_ar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.make_ar" title="Link to this definition"></a></dt>
+<dd><p>lift ar a tangent vector to the manifold at <span class="math notranslate nohighlight">\(I_{n,d}\)</span>
+to a square matrix, the lifted horizontal vector at <span class="math notranslate nohighlight">\(I_n\in SO(n)\)</span>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.name" title="Link to this definition"></a></dt>
+<dd><p>name of the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.parallel">
+<span class="sig-name descname"><span class="pre">parallel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.parallel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.parallel" title="Link to this definition"></a></dt>
+<dd><p>parallel transport. The exponential action is computed
+using expv, with our customized estimate of 1_norm of the operator P</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – a point on the manifold</p></li>
+<li><p><strong>xi</strong> – the initial velocity of the geodesic</p></li>
+<li><p><strong>eta</strong> – the vector to be transported</p></li>
+<li><p><strong>t</strong> – time.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.rand_ambient">
+<span class="sig-name descname"><span class="pre">rand_ambient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.rand_ambient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.rand_ambient" title="Link to this definition"></a></dt>
+<dd><p>random ambient vector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.rand_point">
+<span class="sig-name descname"><span class="pre">rand_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.rand_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.rand_point" title="Link to this definition"></a></dt>
+<dd><p>A random point on the manifold</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.rand_vec">
+<span class="sig-name descname"><span class="pre">rand_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.rand_vec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.rand_vec" title="Link to this definition"></a></dt>
+<dd><p>A random tangent vector to the manifold at x</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.Stiefel.retract">
+<span class="sig-name descname"><span class="pre">retract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#Stiefel.retract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.Stiefel.retract" title="Link to this definition"></a></dt>
+<dd><p>second order retraction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.StiefelParallelOperator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jax_par_trans.manifolds.stiefel.</span></span><span class="sig-name descname"><span class="pre">StiefelParallelOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#StiefelParallelOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.StiefelParallelOperator" title="Link to this definition"></a></dt>
+<dd><p>Defining the operator P used in parallel transport
+on Stiefel manifolds</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.stiefel.StiefelParallelOperator.set_params">
+<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/stiefel.html#StiefelParallelOperator.set_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.stiefel.StiefelParallelOperator.set_params" title="Link to this definition"></a></dt>
+<dd><p>Override the params supplied in constructor
+this is to avoid creating new object repeatedly.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="flag">
+<h2>Flag<a class="headerlink" href="#flag" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+<p id="module-jax_par_trans.manifolds.flag"><span class="math notranslate nohighlight">\(Flag\)</span>: Flag manifold.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jax_par_trans.manifolds.flag.</span></span><span class="sig-name descname"><span class="pre">Flag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dvec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag" title="Link to this definition"></a></dt>
+<dd><p><span class="math notranslate nohighlight">\(Flag(\vec{d})\)</span> with a homogeneous metric defined by a parameter.
+Realized as a quotient of a Stiefel manifold</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alpha</strong> – the metric is <span class="math notranslate nohighlight">\(tr \eta^{T}\eta+(\alpha-1)tr\eta^TYY^T\eta\)</span>.</p>
+</dd>
+</dl>
+<p>For ease of implementation, <span class="math notranslate nohighlight">\(d_{p+1}\)</span> is renamed d[0] and saved at top of dvec.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.approx_nearest">
+<span class="sig-name descname"><span class="pre">approx_nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.approx_nearest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.approx_nearest" title="Link to this definition"></a></dt>
+<dd><p>point on the manifold that is approximately nearest to q</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.christoffel_gamma">
+<span class="sig-name descname"><span class="pre">christoffel_gamma</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.christoffel_gamma"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.christoffel_gamma" title="Link to this definition"></a></dt>
+<dd><p>function representing the Christoffel symbols</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.dexp">
+<span class="sig-name descname"><span class="pre">dexp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ddexp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.dexp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.dexp" title="Link to this definition"></a></dt>
+<dd><p>Higher derivative of Exponential function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – the initial point <span class="math notranslate nohighlight">\(\gamma(0)\)</span></p></li>
+<li><p><strong>v</strong> – the initial velocity <span class="math notranslate nohighlight">\(\dot{\gamma}(0)\)</span></p></li>
+<li><p><strong>t</strong> – time.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If ddexp is False, we return <span class="math notranslate nohighlight">\(\gamma(t), \dot{\gamma}(t)\)</span>.
+Otherwise, we return <span class="math notranslate nohighlight">\(\gamma(t), \dot{\gamma}(t), \ddot{\gamma}(t)\)</span>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.exp">
+<span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.exp" title="Link to this definition"></a></dt>
+<dd><p>geodesic, or riemannian exponential</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.inner">
+<span class="sig-name descname"><span class="pre">inner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.inner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.inner" title="Link to this definition"></a></dt>
+<dd><p>Inner product</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.make_ar">
+<span class="sig-name descname"><span class="pre">make_ar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.make_ar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.make_ar" title="Link to this definition"></a></dt>
+<dd><p>lift ar a tangent vector to the manifold at <span class="math notranslate nohighlight">\(I_{n,d}\)</span>
+to a square matrix a horizontal vector at <span class="math notranslate nohighlight">\(SO(n)\)</span></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.name" title="Link to this definition"></a></dt>
+<dd><p>name of the object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.parallel_canonical">
+<span class="sig-name descname"><span class="pre">parallel_canonical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.parallel_canonical"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.parallel_canonical" title="Link to this definition"></a></dt>
+<dd><p>only works for alpha = .5
+parallel transport. Only works for alpha = .5
+The exponential action is computed
+using expv, with our customized estimate of 1_norm of the operator P</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – a point on the manifold</p></li>
+<li><p><strong>xi</strong> – the initial velocity of the geodesic</p></li>
+<li><p><strong>eta</strong> – the vector to be transported</p></li>
+<li><p><strong>t</strong> – time.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.proj">
+<span class="sig-name descname"><span class="pre">proj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.proj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.proj" title="Link to this definition"></a></dt>
+<dd><p>projection to the tangent bundle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.proj_m">
+<span class="sig-name descname"><span class="pre">proj_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.proj_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.proj_m" title="Link to this definition"></a></dt>
+<dd><p>projection to horizontal space</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.rand_ambient">
+<span class="sig-name descname"><span class="pre">rand_ambient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.rand_ambient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.rand_ambient" title="Link to this definition"></a></dt>
+<dd><p>random ambient vector</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.rand_point">
+<span class="sig-name descname"><span class="pre">rand_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.rand_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.rand_point" title="Link to this definition"></a></dt>
+<dd><p>A random point on the manifold</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.rand_vec">
+<span class="sig-name descname"><span class="pre">rand_vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.rand_vec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.rand_vec" title="Link to this definition"></a></dt>
+<dd><p>A random vector at x</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.retract">
+<span class="sig-name descname"><span class="pre">retract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.retract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.retract" title="Link to this definition"></a></dt>
+<dd><p>second order retraction</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.Flag.symf">
+<span class="sig-name descname"><span class="pre">symf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">omg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#Flag.symf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.Flag.symf" title="Link to this definition"></a></dt>
+<dd><p>symmetrize but keep diagonal blocks unchanged</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.FlagCanonicalParallelOperator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jax_par_trans.manifolds.flag.</span></span><span class="sig-name descname"><span class="pre">FlagCanonicalParallelOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#FlagCanonicalParallelOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.FlagCanonicalParallelOperator" title="Link to this definition"></a></dt>
+<dd><p>To implment expv of Flag parallel operator
+alpha is .5</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.manifolds.flag.FlagCanonicalParallelOperator.set_params">
+<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/manifolds/flag.html#FlagCanonicalParallelOperator.set_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.manifolds.flag.FlagCanonicalParallelOperator.set_params" title="Link to this definition"></a></dt>
+<dd><p>Override the params supplied in constructor
+this is to avoid creating new object repeatedly.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="module-jax_par_trans.expv">
+<span id="jax-par-trans-expv"></span><h1>jax_par_trans.expv<a class="headerlink" href="#module-jax_par_trans.expv" title="Link to this heading"></a></h1>
+<section id="expv">
+<h2>Expv<a class="headerlink" href="#expv" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+<p id="module-jax_par_trans.expv.expv">define a class of linear operators with an exponential action method.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="jax_par_trans.expv.expv.LinearOperator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.expv.</span></span><span class="sig-name descname"><span class="pre">LinearOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/expv.html#LinearOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.expv.LinearOperator" title="Link to this definition"></a></dt>
+<dd><p>A class of linear operators with method for
+exponential action. The operator operates on a vector space via dot.
+the exponential action expv(t*self, b) is provided through the method expv.
+To use the operator, define a derived class of linear operator supplying an estimate for 1-norm.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.expv.expv.LinearOperator.dot">
+<span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/expv.html#LinearOperator.dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.expv.LinearOperator.dot" title="Link to this definition"></a></dt>
+<dd><p>Let the operator operates on b</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.expv.expv.LinearOperator.expv">
+<span class="sig-name descname"><span class="pre">expv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/expv.html#LinearOperator.expv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.expv.LinearOperator.expv" title="Link to this definition"></a></dt>
+<dd><p>Exponential action on b. Return is exp(t self)b</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.expv.expv.LinearOperator.one_norm_est">
+<span class="sig-name descname"><span class="pre">one_norm_est</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/expv.html#LinearOperator.one_norm_est"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.expv.LinearOperator.one_norm_est" title="Link to this definition"></a></dt>
+<dd><p>Estimate the 1-norm</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="jax_par_trans.expv.expv.LinearOperator.set_params">
+<span class="sig-name descname"><span class="pre">set_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/expv.html#LinearOperator.set_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.expv.LinearOperator.set_params" title="Link to this definition"></a></dt>
+<dd><p>Override the params supplied in constructor
+this is to avoid creating new object repeatedly.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="utils">
+<h2>Utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+</tbody>
+</table>
+<p id="module-jax_par_trans.expv.utils">Common util functions</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.asym">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">asym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#asym"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.asym" title="Link to this definition"></a></dt>
+<dd><p>asymmetrize</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.cz">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">cz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#cz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.cz" title="Link to this definition"></a></dt>
+<dd><p>check if zero</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.grand">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">grand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#grand"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.grand" title="Link to this definition"></a></dt>
+<dd><p>random with key</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.hcat">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">hcat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#hcat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.hcat" title="Link to this definition"></a></dt>
+<dd><p>horizontal concatenate</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.lie">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">lie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#lie"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.lie" title="Link to this definition"></a></dt>
+<dd><p>Lie bracket</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.sym">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">sym</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#sym"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.sym" title="Link to this definition"></a></dt>
+<dd><p>symmetrize</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="jax_par_trans.expv.utils.vcat">
+<span class="sig-prename descclassname"><span class="pre">jax_par_trans.expv.utils.</span></span><span class="sig-name descname"><span class="pre">vcat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/jax_par_trans/expv/utils.html#vcat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#jax_par_trans.expv.utils.vcat" title="Link to this definition"></a></dt>
+<dd><p>vertical concatenate</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="par_trans.html" class="btn btn-neutral float-left" title="par_trans.manifolds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Du Nguyen and Stefan Sommer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

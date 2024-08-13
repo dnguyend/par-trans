@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>jax_par_trans.expv.expv &mdash; par-trans  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            par-trans
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Numpy Parallel transport</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../par_trans.html">par_trans.manifolds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../par_trans.html#module-par_trans.utils">par_trans.expv</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">JAX Parallel transport</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../jax_par_trans.html">jax_par_trans.manifolds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../jax_par_trans.html#module-jax_par_trans.expv">jax_par_trans.expv</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Other Resources:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://en.wikipedia.org/wiki/Parallel_transport">Wikipedia</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/dnguyend/par-trans">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">par-trans</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">jax_par_trans.expv.expv</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for jax_par_trans.expv.expv</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;define a class of linear operators with an exponential action method.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">jit</span><span class="p">,</span> <span class="n">lax</span>
+
+
+<span class="c1"># The first 30 values are from table A.3 of Computing Matrix Functions.</span>
+<span class="c1"># other are from various table</span>
+<span class="n">_theta_array</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">2.29e-16</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mf">2.58e-8</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mf">1.39e-5</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mf">3.40e-4</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.40e-3</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mf">9.07e-3</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mf">2.38e-2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mf">5.00e-2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mf">8.96e-2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mf">1.44e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mf">2.14e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mf">3.00e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">13</span><span class="p">,</span> <span class="mf">4.00e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">14</span><span class="p">,</span> <span class="mf">5.14e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">15</span><span class="p">,</span> <span class="mf">6.41e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mf">7.81e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">17</span><span class="p">,</span> <span class="mf">9.31e-1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">18</span><span class="p">,</span> <span class="mf">1.09</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">19</span><span class="p">,</span> <span class="mf">1.26</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">20</span><span class="p">,</span> <span class="mf">1.44</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">21</span><span class="p">,</span> <span class="mf">1.62</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">22</span><span class="p">,</span> <span class="mf">1.82</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">23</span><span class="p">,</span> <span class="mf">2.01</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">24</span><span class="p">,</span> <span class="mf">2.22</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">25</span><span class="p">,</span> <span class="mf">2.43</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">26</span><span class="p">,</span> <span class="mf">2.64</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">27</span><span class="p">,</span> <span class="mf">2.86</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mf">3.08</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">29</span><span class="p">,</span> <span class="mf">3.31</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mf">3.54</span><span class="p">],</span>
+    <span class="c1"># The rest are from table 3.1 of]</span>
+    <span class="c1"># Computing the Action of the Matrix Exponential.]</span>
+    <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mf">4.7</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mf">7.2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">55</span><span class="p">,</span> <span class="mf">9.9</span><span class="p">]])</span>
+
+
+
+<div class="viewcode-block" id="LinearOperator">
+<a class="viewcode-back" href="../../../jax_par_trans.html#jax_par_trans.expv.expv.LinearOperator">[docs]</a>
+<span class="k">class</span> <span class="nc">LinearOperator</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; A class of linear operators with method for</span>
+<span class="sd">    exponential action. The operator operates on a vector space via dot.</span>
+<span class="sd">    the exponential action expv(t*self, b) is provided through the method expv.</span>
+<span class="sd">    To use the operator, define a derived class of linear operator supplying an estimate for 1-norm.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="LinearOperator.set_params">
+<a class="viewcode-back" href="../../../jax_par_trans.html#jax_par_trans.expv.expv.LinearOperator.set_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override the params supplied in constructor</span>
+<span class="sd">        this is to avoid creating new object repeatedly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="LinearOperator.dot">
+<a class="viewcode-back" href="../../../jax_par_trans.html#jax_par_trans.expv.expv.LinearOperator.dot">[docs]</a>
+    <span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Let the operator operates on b</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="LinearOperator.one_norm_est">
+<a class="viewcode-back" href="../../../jax_par_trans.html#jax_par_trans.expv.expv.LinearOperator.one_norm_est">[docs]</a>
+    <span class="k">def</span> <span class="nf">one_norm_est</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate the 1-norm</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="LinearOperator.expv">
+<a class="viewcode-back" href="../../../jax_par_trans.html#jax_par_trans.expv.expv.LinearOperator.expv">[docs]</a>
+    <span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnums</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">expv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exponential action on b. Return is exp(t self)b</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">norm_est</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">one_norm_est</span><span class="p">()</span>
+        <span class="n">agm</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">norm_est</span><span class="o">/</span><span class="n">_theta_array</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="n">_theta_array</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">m_star</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">_theta_array</span><span class="p">[</span><span class="n">agm</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">norm_est</span><span class="o">/</span><span class="n">_theta_array</span><span class="p">[</span><span class="n">agm</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">tol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">u_d</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="o">-</span><span class="mi">53</span>
+            <span class="n">tol</span> <span class="o">=</span> <span class="n">u_d</span>
+
+        <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">norm2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">body_fun</span><span class="p">(</span><span class="n">carry</span><span class="p">):</span>
+            <span class="c1"># b is the power sequence, f is the sum of sequence</span>
+            <span class="n">j</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pass_norm</span><span class="p">,</span> <span class="n">current_norm</span> <span class="o">=</span> <span class="n">carry</span>
+            <span class="n">pass_norm</span> <span class="o">=</span> <span class="n">current_norm</span>
+
+            <span class="n">b</span> <span class="o">=</span> <span class="n">t</span> <span class="o">/</span> <span class="p">(</span><span class="n">s</span><span class="o">*</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f</span> <span class="o">+</span> <span class="n">b</span>
+            <span class="n">current_norm</span> <span class="o">=</span> <span class="n">norm2</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pass_norm</span><span class="p">,</span> <span class="n">current_norm</span>
+
+        <span class="k">def</span> <span class="nf">cond_fun</span><span class="p">(</span><span class="n">carry</span><span class="p">):</span>
+            <span class="n">j</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pass_norm</span><span class="p">,</span> <span class="n">current_norm</span> <span class="o">=</span> <span class="n">carry</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">m_star</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">pass_norm</span> <span class="o">+</span> <span class="n">current_norm</span> <span class="o">&gt;</span> <span class="n">tol</span> <span class="o">*</span> <span class="n">norm2</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">carry</span><span class="p">):</span>
+            <span class="n">j</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pass_norm</span><span class="p">,</span> <span class="n">current_norm</span> <span class="o">=</span> <span class="n">carry</span>
+            <span class="n">j</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pass_norm</span><span class="p">,</span> <span class="n">current_norm</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">while_loop</span><span class="p">(</span><span class="n">cond_fun</span><span class="p">,</span> <span class="n">body_fun</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">norm2</span><span class="p">(</span><span class="n">b</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">j</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pass_norm</span><span class="p">,</span> <span class="n">current_norm</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">fori_loop</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">body_fun</span><span class="o">=</span><span class="n">func</span><span class="p">,</span>
+                            <span class="n">init_val</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">ret</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Du Nguyen and Stefan Sommer.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
