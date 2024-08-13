@@ -37,5 +37,5 @@ Indices and tables
    GitHub <https://github.com/dnguyend/par-trans>
 
 .. rubric:: References   
-.. [NgSo24] Nguyen, D.; Sommer, S...: Parallel Transport on Matrix Manifolds and Exponential Action `arXiv:2408. <https://arxiv.org/abs/2408.>`_.
+.. [NgSo24] Nguyen, D.; Sommer, S. (2024). Parallel Transport on Matrix Manifolds and Exponential Action `arXiv:2408..06054 <https://arxiv.org/abs/2408.06054>`_.
   
