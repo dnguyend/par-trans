@@ -301,19 +301,18 @@ class Stiefel():
         :param eta: the vector to be transported
         :param t: time.
 
-        """        
+        """
         n, d = x.shape
         alp = self.alpha
         u, _, _ = la.svd(xi - x@(x.T@xi), full_matrices=False)
         k = min(n-d, d)
         q = u[:, :k]
         xq = np.concatenate([x, q], axis=1)
-        
+
         ar = xq.T@xi
         a = ar[:d, :]
         r = ar[d:, :]
 
-        # ar = self.make_ar(a, r)
         xq = np.concatenate([x, q], axis=1)
         aar = self.make_ar(2*alp*a, r)
         prt0 = xq@expm(t*aar)
@@ -326,8 +325,49 @@ class Stiefel():
             arn[:ar.shape[1], :] = ar[:ar.shape[1], :]*ft
             return arn
 
-        # w = sc(sp_opt.expv(sc(xq.T@eta, salp), t), 1/salp)
         salp = np.sqrt(alp)
         w = sc(solve_w(sc(xq.T@eta, salp), ar, alp, t), 1/salp)
 
-        return prt0@w@prt1 + (eta - x@x.T@eta - q@q.T@eta)@expm(t*(1-alp)*a)
+        return prt0@w@prt1 + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(t*(1-alp)*a)
+
+    def timed_parallel(self, x, xi, eta, t, timer):
+        """parallel transport. The exponential action is computed
+        using expv, with our customized estimate of 1_norm of the operator P
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+        :param timer: a timer, a callable, typically perf_counter or process_time
+        """
+        t0 = timer()
+        n, d = x.shape
+        alp = self.alpha
+        u, _, _ = la.svd(xi - x@(x.T@xi), full_matrices=False)
+        k = min(n-d, d)
+        q = u[:, :k]
+        xq = np.concatenate([x, q], axis=1)
+
+        ar = xq.T@xi
+        a = ar[:d, :]
+        r = ar[d:, :]
+
+        xq = np.concatenate([x, q], axis=1)
+        aar = self.make_ar(2*alp*a, r)
+        prt0 = xq@expm(t*aar)
+        prt1 = expm(t*(1-2*self.alpha)*a)
+
+        def sc(ar, ft):
+            """ Scaling the a block of ar by a factor ft
+            """
+            arn = ar.copy()
+            arn[:ar.shape[1], :] = ar[:ar.shape[1], :]*ft
+            return arn
+
+        salp = np.sqrt(alp)
+        t1 = timer()
+        w = sc(solve_w(sc(xq.T@eta, salp), ar, alp, t), 1/salp)
+        t2 = timer()
+        ret = prt0@(w@prt1) + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(t*(1-alp)*a)
+        t3 = timer()
+        return ret, t3-t0, t2-t1, t3-t0 - (t2-t1)
