@@ -316,6 +316,12 @@ class Flag():
 
     def parallel_canonical(self, x, xi, eta, t):
         """only works for alpha = .5
+        using expv, with our customized estimate of 1_norm of the operator P
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
         """
         n, d = x.shape
         u, _, _ = la.svd(xi - x@(x.T@xi), full_matrices=False)
@@ -343,6 +349,13 @@ class Flag():
 
     def timed_parallel_canonical(self, x, xi, eta, t, timer):
         """only works for alpha = .5
+        using expv, with our customized estimate of 1_norm of the operator P
+
+        :param x: a point on the manifold
+        :param xi: the initial velocity of the geodesic
+        :param eta: the vector to be transported
+        :param t: time.
+        :param timer: a timer, a callable, typically perf_counter or process_time        
         """
         t0 = timer()
         n, d = x.shape
