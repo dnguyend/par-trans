@@ -311,7 +311,7 @@ class Flag():
                                rmatvec=lambda w: t*par_T(w.reshape(d+k, d)).reshape(-1))
 
         return prt0@expm_multiply(p_opt, (xq.T@eta).reshape(-1), traceA=0).reshape(d+k, d) \
-            + (eta - x@x.T@eta - q@q.T@eta)@expm(0.5*t*a)
+            + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(0.5*t*a)
     
 
     def parallel_canonical(self, x, xi, eta, t):
@@ -339,4 +339,36 @@ class Flag():
 
         salp = np.sqrt(0.5)
         return prt0@sc(solve_w(sc(xq.T@eta, salp), ar, self, t), 1/salp) \
-            + (eta - x@x.T@eta - q@q.T@eta)@expm(0.5*t*a)
+            + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(0.5*t*a)
+
+    def timed_parallel_canonical(self, x, xi, eta, t, timer):
+        """only works for alpha = .5
+        """
+        t0 = timer()
+        n, d = x.shape
+        u, _, _ = la.svd(xi - x@(x.T@xi), full_matrices=False)
+        k = min(n-d, d)
+        q = u[:, :k]
+
+        xq = np.concatenate([x, q], axis=1)
+        ar = xq.T@xi
+        a = ar[:d, :]
+        r = ar[d:, :]
+
+        aar = self.make_ar(a, r)
+        prt0 = xq@expm(t*aar)
+
+        def sc(ar, ft):
+            """ Scaling the a block of ar by a factor ft
+            """
+            arn = ar.copy()
+            arn[:ar.shape[1], :] = ar[:ar.shape[1], :]*ft
+            return arn
+
+        salp = np.sqrt(0.5)
+        t1 = timer()
+        w = sc(solve_w(sc(xq.T@eta, salp), ar, self, t), 1/salp)
+        t2 = timer()
+        ret = prt0@w + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(0.5*t*a)
+        t3 = timer()
+        return ret, t3-t0, t2-t1, t3-t0 - (t2-t1)

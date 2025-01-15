@@ -290,7 +290,7 @@ class Stiefel():
                                rmatvec=lambda w: t*par_T(w.reshape(d+k, d)).reshape(-1))
 
         return prt0@expm_multiply(p_opt, (xq.T@eta).reshape(-1), traceA=0).reshape(d+k, d)@prt1 \
-            + (eta - x@x.T@eta - q@q.T@eta)@expm(t*(1-alp)*a)
+            + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(t*(1-alp)*a)
 
     def parallel(self, x, xi, eta, t):
         """parallel transport. The exponential action is computed
