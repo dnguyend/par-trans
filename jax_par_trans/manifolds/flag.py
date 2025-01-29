@@ -237,4 +237,4 @@ class Flag():
 
         w = self._sc(flag_opt.expv(self._sc(xq.T@eta, salp), t), 1/salp)
 
-        return prt0@w + (eta - x@x.T@eta - q@q.T@eta)@expm(0.5*t*ar[:d, :])
+        return prt0@w + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(0.5*t*ar[:d, :])

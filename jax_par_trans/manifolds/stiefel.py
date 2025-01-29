@@ -228,4 +228,4 @@ class Stiefel():
         w = self._sc(sp_opt.expv(self._sc(xq.T@eta, salp), t), 1/salp)
 
         return prt0@w@prt1 \
-            + (eta - x@x.T@eta - q@q.T@eta)@expm(t*(1-alp)*a)
+            + (eta - x@(x.T@eta) - q@(q.T@eta))@expm(t*(1-alp)*a)
